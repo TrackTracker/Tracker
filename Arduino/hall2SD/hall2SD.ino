@@ -3,6 +3,8 @@
  *
  * This example shows how to log data from an analog sensor
  * to an SD card using the SD library.
+ * 
+ * Here we log the Hall sensor data and read the filesize 
  *
  * The WeMos Micro SD Shield uses:
  * D5, D6, D7, D8, 3V3 and G
@@ -12,8 +14,6 @@
  * D6 = MISO
  * D7 = MOSI
  * D8 = CS
- *
- * The WeMos D1 Mini has one analog pin A0.
  *
  * The SD card library uses 8.3 format filenames and is case-insensitive.
  * eg. IMAGE.JPG is the same as image.jpg
@@ -28,10 +28,9 @@
 #include <SPI.h>
 #include <SD.h>
 
-// change this to match your SD shield or module;
-// WeMos Micro SD Shield V1.0.0: D8
-// LOLIN Micro SD Shield V1.2.0: D4 (Default)
-const int chipSelect = D4;
+// LOLIN Micro SD Shield V1.2.0: 4 (Default)
+const int chipSelect = 4;
+File root;
 
 void setup()
 {
@@ -40,9 +39,7 @@ void setup()
   while (!Serial) {
     ; // wait for serial port to connect. Needed for Leonardo only
   }
-
   Serial.print("Initializing SD card...");
-
   // see if the card is present and can be initialized:
   if (!SD.begin(chipSelect)) {
     Serial.println("Card failed, or not present");
@@ -56,27 +53,33 @@ void loop()
 {
   // make a string for assembling the data to log:
   String dataString = "";
-
-  // read three sensors and append to the string:
-  //for (int analogPin = 0; analogPin < 3; analogPin++) {
-  //  int sensor = analogRead(analogPin);
-  //  dataString += String(sensor);
-  //  if (analogPin < 2) {
-  //    dataString += ",";
-  //  }
-  //}
-  // The WeMos D1 Mini only has one analog pin A0.
-  int sensor = analogRead(A0);
-  dataString += String(sensor);
+  float BatteryVoltage = 0;
+  BatteryVoltage = analogRead(35)/4096.0*7.445; 
+  dataString += String(BatteryVoltage);
+  dataString += "\r\n";
 
   // open the file. note that only one file can be open at a time,
   // so you have to close this one before opening another.
-  File dataFile = SD.open("datalog.txt", FILE_WRITE);
+  //File dataFile = SD.open("datalog2.txt", FILE_WRITE);
+  root = SD.open("/");
 
+  printDirectory(root, 0);
+
+  Serial.println("done!");
+  File file = SD.open("/datalog2.txt",FILE_APPEND);
+  if(!file) {
+    Serial.println("File doens't exist");
+    Serial.println("Creating file...");
+  }
+  else {
+    
+    Serial.println("File already exists");  
+    Serial.println(file.size());  
+  }
   // if the file is available, write to it:
-  if (dataFile) {
-    dataFile.println(dataString);
-    dataFile.close();
+  if (file) {
+    file.print(dataString);
+    file.close();
     // print to the serial port too:
     Serial.println(dataString);
   }
@@ -84,6 +87,29 @@ void loop()
   else {
     Serial.println("error opening datalog.txt");
   }
-
   delay(1000);
+}
+
+void printDirectory(File dir, int numTabs) {
+  while (true) {
+
+    File entry =  dir.openNextFile();
+    if (! entry) {
+      // no more files
+      break;
+    }
+    for (uint8_t i = 0; i < numTabs; i++) {
+      Serial.print('\t');
+    }
+    Serial.print(entry.name());
+    if (entry.isDirectory()) {
+      Serial.println("/");
+      printDirectory(entry, numTabs + 1);
+    } else {
+      // files have sizes, directories do not
+      Serial.print("\t\t");
+      Serial.println(entry.size(), DEC);
+    }
+    entry.close();
+  }
 }
