@@ -1,53 +1,18 @@
+//based on  http://www.iotsharing.com/2019/07/how-to-turn-esp-with-sdcard-or-spiffs-a-web-file-server.html?m=1
 #include <WiFiClient.h>
 #include <ESP32WebServer.h> //  https://github.com/nhatuan84/esp32-webserver to C:/Users/[YOUR_USER_NAME]/Documents/Arduino/libraries
 #include <WiFi.h>
 #include <ESPmDNS.h>
 #include <SPI.h>
 #include <mySD.h> // https://github.com/nhatuan84/esp32-micro-sdcard to C:/Users/[YOUR_USER_NAME]/Documents/Arduino/libraries
-// http://www.iotsharing.com/2019/07/how-to-turn-esp-with-sdcard-or-spiffs-a-web-file-server.html?m=1
 
 #include "IF.h" //Our HTML webpage contents
 #include "credentials.h" // // your WLAN login data
-//String serverIndex = "<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>"
-//"<form method='POST' action='#' enctype='multipart/form-data' id='upload_form'>"
-//    "<input type='file' name='update'>"
-//    "<input type='submit' value='Upload'>"
-//"</form>"
-//"<div id='prg'>progress: 0%</div>"
-//"<script>"
-//"$('form').submit(function(e){"
-//    "e.preventDefault();"
-//      "var form = $('#upload_form')[0];"
-//      "var data = new FormData(form);"
-//      " $.ajax({"
-//            "url: '/update',"
-//            "type: 'POST',"               
-//            "data: data,"
-//            "contentType: false,"                  
-//            "processData:false,"  
-//            "xhr: function() {"
-//                "var xhr = new window.XMLHttpRequest();"
-//                "xhr.upload.addEventListener('progress', function(evt) {"
-//                    "if (evt.lengthComputable) {"
-//                        "var per = evt.loaded / evt.total;"
-//                        "$('#prg').html('progress: ' + Math.round(per*100) + '%');"
-//                    "}"
-//               "}, false);"
-//               "return xhr;"
-//            "},"                                
-//            "success:function(d, s) {"    
-//                "console.log('success!')"
-//           "},"
-//            "error: function (a, b, c) {"
-//            "}"
-//          "});"
-//"});"
-//"</script>";
 
 const char* ssid = "***";
 const char* password = "***";
 const char* ssidAP = "TrackTracker";
-bool WIFIAP= true; // if true ESP32 will be a WLAN Access point "TrackTracker", no pwd, else it will log into your WLAN (credentials needed), good while testing 
+bool WIFIAP= true; // if true ESP32 will be a WLAN Access point "TrackTracker", no pwd, else it will log into your WLAN (credentials in credentials.h needed), good while testing 
 
 ESP32WebServer server(80);
 File root;
