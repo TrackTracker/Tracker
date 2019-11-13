@@ -9,8 +9,6 @@
 #include "IF.h" //Our HTML webpage contents
 #include "credentials.h" // // your WLAN login data
 
-const char* ssid = "***";
-const char* password = "***";
 const char* ssidAP = "TrackTracker";
 bool WIFIAP= true; // if true ESP32 will be a WLAN Access point "TrackTracker", no pwd, else it will log into your WLAN (credentials in credentials.h needed), good while testing 
 

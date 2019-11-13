@@ -1,3 +1,6 @@
+ESP32
+https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf
+
 D32Pinout:
 https://forum.hobbycomponents.com/viewtopic.php?f=111&t=2462
 
