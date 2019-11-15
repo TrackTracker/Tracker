@@ -8,7 +8,8 @@
 */
 
 TinyGPS gps; //from https://github.com/mikalhart/TinyGPS to C:/Users/[YOUR_USER_NAME]/Documents/Arduino/libraries
-SoftwareSerial ss(16, 15);
+//SoftwareSerial ss(16, 15);
+SoftwareSerial ss(16, 17); // RX,TX RX goes to TX of the other device
 
 static void smartdelay(unsigned long ms);
 static void print_float(float val, float invalid, int len, int prec);
