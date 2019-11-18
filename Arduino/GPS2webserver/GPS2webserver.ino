@@ -66,11 +66,18 @@ void handleRoot() {
   char slon[32] ="**********";
   char slat[32] ="**********";
   char sage[32] ="**********";
+  char sdst[32] ="**********";
   float flat, flon;
+  static const double Phi_LAT = 53.621776, Phi_LON = 10.013678; 
   gps.f_get_position(&flat, &flon, &age);
+  float dst= gps.distance_between(flat, flon, Phi_LAT, Phi_LON);
+  int sats= gps.satellites();
+  int hdop = gps.hdop();
   dtostrf(flon, 4, 10, slon);
   dtostrf(flat, 4, 10, slat);
-  dtostrf(age, 4, 10, sage);
+  dtostrf(flon, 4, 10, slon);
+  dtostrf(dst, 4, 1, sdst);
+  dtostrf(age, 4, 1, sage);
   Serial.print(slat);Serial.print(slon);Serial.println(sage);
   gps.crack_datetime(&year, &month, &day, &hour, &minute, &second, &hundredths, &age);
   sprintf(sdate, "%02d/%02d/%02d",month, day, year );
@@ -82,19 +89,25 @@ void handleRoot() {
   //first GPS
   String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n <!DOCTYPE html> <html> <head> <title>GPS Interfacing with D32 for TrackTracker</title> <style>";
   s += "a:link {background-color: YELLOW;text-decoration: none;}";
-  s += "table, th, td {border: 1px solid black;} </style> </head> <body> <h1  style=";
+  s += "table, th, td {border: 1px solid black;} </style> <meta http-equiv=""refresh"" content=""20"" /> </head> <body> <h1  style=";
   s += "font-size:300%;";
   s += " ALIGN=CENTER> GPS Interfacing with D32 for TrackTracker </h1>";
+  s += " <img src=""\bikegps.gif"" alt=""bikegps.gif"">";
   s += "<p ALIGN=CENTER style=""font-size:150%;""";
   s += "> <b>Location Details</b></p> ";
   s += "<table ALIGN=CENTER style=width:50%> ";
-  s += "<tr> <th>Latitude</th>";
-  s += "<td ALIGN=CENTER >";
+  s += "<tr> <th>Satellites</th> <td ALIGN=CENTER >";
+  s += String(sats);
+  s += "</td> </tr> <tr> <th>HDOP</th> <td ALIGN=CENTER >";
+  s += String(hdop);
+  s += "</td> </tr> <tr> <th>Latitude</th> <td ALIGN=CENTER >";
   s += slat;
   s += "</td> </tr> <tr> <th>Longitude</th> <td ALIGN=CENTER >";
   s += slon;
   s += "</td> </tr> <tr>  <th>Age</th> <td ALIGN=CENTER >";
   s += sage;
+  s += "</td> </tr> <tr>  <th>Distance to Philips, km</th> <td ALIGN=CENTER >";
+  s += sdst;
   s += "</td> </tr> <tr>  <th>Date</th> <td ALIGN=CENTER >";
   s += sdate;
   s += "</td></tr> <tr> <th>Time</th> <td ALIGN=CENTER >";
@@ -273,13 +286,13 @@ void setup(void){
 
 void loop(void){
   server.handleClient();
-    while (ss.available())
+  while (ss.available())
   {
-  gps.encode(ss.read());
+    gps.encode(ss.read());
   }
   Serial.println("GPS");
   digitalWrite(LED_BUILTIN, LOW);
-  delay(100);
+  delay(50);
   digitalWrite(LED_BUILTIN, HIGH); // Builtin LED aus
-  delay(100);
+  delay(50);
 }
